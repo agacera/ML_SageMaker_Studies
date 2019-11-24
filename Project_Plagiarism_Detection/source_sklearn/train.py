@@ -6,8 +6,8 @@ import pandas as pd
 
 from sklearn.externals import joblib
 
-## TODO: Import any additional libraries you need to define a model
-
+## Import any additional libraries you need to define a model
+from sklearn.ensemble import RandomForestClassifier
 
 # Provided model load function
 def model_fn(model_dir):
@@ -36,10 +36,11 @@ if __name__ == '__main__':
     # Do not need to change
     parser.add_argument('--output-data-dir', type=str, default=os.environ['SM_OUTPUT_DATA_DIR'])
     parser.add_argument('--model-dir', type=str, default=os.environ['SM_MODEL_DIR'])
-    parser.add_argument('--data-dir', type=str, default=os.environ['SM_CHANNEL_TRAIN'])
-    
-    ## TODO: Add any additional arguments that you will need to pass into your model
-    
+    parser.add_argument('--data-dir', type=str, default=os.environ['SM_CHANNEL_TRAINING'])
+
+    ## Add any additional arguments that you will need to pass into your model
+    parser.add_argument('--number_estimators', type=int, default=100)    
+
     # args holds all passed-in arguments
     args = parser.parse_args()
 
@@ -51,20 +52,16 @@ if __name__ == '__main__':
     train_y = train_data.iloc[:,0]
     train_x = train_data.iloc[:,1:]
     
-    
     ## --- Your code here --- ##
     
-
     ## TODO: Define a model 
-    model = None
-    
+    model = RandomForestClassifier(n_estimators=args.number_estimators)
     
     ## TODO: Train the model
-    
+    model.fit(train_x, train_y)
     
     
     ## --- End of your code  --- ##
-    
 
     # Save the trained model
     joblib.dump(model, os.path.join(args.model_dir, "model.joblib"))
